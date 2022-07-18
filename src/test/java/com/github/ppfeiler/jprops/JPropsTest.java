@@ -27,6 +27,6 @@ class JPropsTest {
     void canReadPropertiesFromClassWithPropertyAnnotation() {
         final JProps jprops = new JProps();
         final TestDataProperties testDataProperties = jprops.getObject(TestDataProperties.class);
-        assertEquals("Hello World", testDataProperties.getGreeting());
+        assertEquals("Hello, World", testDataProperties.getGreeting());
     }
 }

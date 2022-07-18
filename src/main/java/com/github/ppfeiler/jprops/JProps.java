@@ -17,7 +17,6 @@ import org.apache.commons.lang3.StringUtils;
 import java.io.File;
 import java.lang.reflect.Field;
 import java.util.*;
-import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.collectingAndThen;
 import static java.util.stream.Collectors.toList;
@@ -34,16 +33,24 @@ public class JProps {
     private final Configuration config;
 
     public JProps() {
-        this("profile");
+        this(new JPropsConfiguration());
     }
 
-    public JProps(final String profileEnvName) {
-        final String profiles = Optional.ofNullable(System.getProperty(profileEnvName))
-                .orElse("");
+    public JProps(final JPropsConfiguration configuration) {
+        List<String> activeProfiles = getActiveProfiles(configuration);
+        config = loadProperties(activeProfiles);
+    }
 
-        log.debug("Using profiles: {}", profiles);
-        final var profile = profiles.split(",");
-        config = loadProperties(profile);
+    private List<String> getActiveProfiles(final JPropsConfiguration config) {
+        List<String> activeProfiles = new ArrayList<>();
+        if (config.isLoadProvileFromEnvironment()) {
+            final String profilesFromEnv = Optional.ofNullable(System.getProperty(config.getProvileEnvironment()))
+                    .orElse("");
+            activeProfiles.addAll(Arrays.asList(profilesFromEnv.split(",")));
+        }
+
+        log.debug("Using profiles: {}", activeProfiles);
+        return activeProfiles;
     }
 
     public String getString(final String key) {
@@ -106,13 +113,13 @@ public class JProps {
         return conf.get(type, attribute);
     }
 
-    private Configuration loadProperties(final String[] profiles) {
+    private Configuration loadProperties(final List<String> profiles) {
         // There are different combiners that can be used: OverrideCombiner, MergeCombiner, UnionCombiner
         final CombinedConfiguration configuration = new CombinedConfiguration(DEFAULT_COMBINER);
 
         // Not very intuitive: First load the specific properties files and then add the default one
         final List<String> configurationsToLoad = //
-                Stream.of(profiles) //
+                profiles.stream() //
                         .filter(profile -> !StringUtils.isBlank(profile)) //
                         .map(profile -> CONFIG_FILE_PREFIX + profile) //
                         .collect(collectingAndThen( //
