@@ -4,7 +4,7 @@ plugins {
     id "io.freefair.lombok" version "6.5.0.3"
 }
 
-group 'com.github.ppfeiler.jprops'
+group 'com.github.ppfeiler.jconfig'
 version '1.0.0-SNAPSHOT'
 
 sourceCompatibility = JavaVersion.VERSION_17
@@ -23,11 +23,7 @@ repositories {
 }
 
 dependencies {
-    implementation 'org.apache.commons:commons-configuration2:2.8.0'
-    implementation 'commons-beanutils:commons-beanutils:1.9.4'
-
     implementation 'ch.qos.logback:logback-classic:1.3.0-alpha16'
-    implementation 'org.slf4j:jcl-over-slf4j:1.7.36'
 
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.1'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.1'
